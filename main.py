@@ -2,8 +2,8 @@
 import requests
 import selenium
 from selenium.webdriver import Keys
+import threading
 
-from supporting_functions import *
 import time
 
 
@@ -15,7 +15,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 def main():
 
-    c       hromedriver_autoinstaller.install()  # Check if the current version of chromedriver exists                                     # and if it doesn't exist, download it automatically                                    # then add chromedriver to path
+    chromedriver_autoinstaller.install()  # Check if the current version of chromedriver exists                                     # and if it doesn't exist, download it automatically                                    # then add chromedriver to path
 
     applyTesla()
 
@@ -36,38 +36,51 @@ def applyTesla():
     #time.sleep(2)
 
     #counter for keeping track and not double applying
+    counterFile = open("counterFile.csv", "r")
     x = 457
+    x = int(counterFile.read())
+    print(x)
+
+    counterFile.close()
     delay = 1
     textInput = "1. With only one python class behind me, I wrote this bot today to apply for every engineering roll at Tesla. 2. Being able to learn new skills rapidly and apply them, lately this can be seen in this code I wrote, learning to ride a motorcycle in under a week and putting 1500 miles on it, and all throughout school. I am not the smartest person in the room but I will be the person in the room the longest if I feel like I don't understand something completely. 3. Not shutting down in high stress environments, instead loving the purpose and willing learn everything I can and move on. 4. Positive attitude and communication, instead of accepting defeat of a chance to work at Tesla I am taking this hail-Mary."
 
 
     for i in range(1392):
-        try:
-            runDisThang(delay, driver, teslaEngineer, textInput, x)
-            x= x+1
-        except:
-            time.sleep(3)
-            driver.get(teslaEngineer)
-            time.sleep(2)
-            try:
-                runDisThang(delay*2, driver, teslaEngineer, textInput, x)
-                x = x + 1
-            except:
-                time.sleep(3)
-                driver.get(teslaEngineer)
-                time.sleep(2)
-                try:
-                    runDisThang(delay * 4, driver, teslaEngineer, textInput, x)
-                    x=x+1
-                except:
-                    time.sleep(3)
-                    driver.get(teslaEngineer)
-                    time.sleep(2)
-                    try:
-                        runDisThang(delay * 8, driver, teslaEngineer, textInput, x)
-                        x=x+1
-                    except:
-                        exit(1)
+        #try:
+
+
+
+        runDisThang(delay, driver, teslaEngineer, textInput, x)
+        x= x+1
+
+        #except:
+
+            # time.sleep(3)
+            # driver.get(teslaEngineer)
+            # time.sleep(2)
+            # try:
+            #     runDisThang(delay*2, driver, teslaEngineer, textInput, x)
+            #     x = x + 1
+            # except:
+            #     time.sleep(3)
+            #     driver.get(teslaEngineer)
+            #     time.sleep(2)
+            #     try:
+            #         runDisThang(delay * 4, driver, teslaEngineer, textInput, x)
+            #         x=x+1
+            #     except:
+            #         time.sleep(3)
+            #         driver.get(teslaEngineer)
+            #         time.sleep(2)
+            #         try:
+            #             runDisThang(delay * 8, driver, teslaEngineer, textInput, x)
+            #             x=x+1
+            #         except:
+            #             exit(1)
+        counterFile = open("counterFile.csv", "w")
+        counterFile.write(str(x))
+        counterFile.close()
 
 
 def runDisThang(delay, driver, teslaEngineer, textInput, x):
@@ -102,11 +115,10 @@ def runDisThang(delay, driver, teslaEngineer, textInput, x):
     countryDrop.select_by_value('US')
     socailDrop = Select(driver.find_element(By.XPATH, "//select [@name = '/profileLinks/0/type']"))
     socailDrop.select_by_value('portfolio')
-    driver.find_element(By.XPATH, "//input [@name = '/resume']").send_keys(
-        "/Users/drewworthley/Downloads/Drew_Worthley_ResumeUpload.pdf")
+    driver.find_element(By.XPATH, "//input [@name = '/resume']").send_keys(r"C:\Users\Andrew Worthley\Downloads\Drew_Worthley_Resume.pdf")
     # only will click on buttons that are on screen
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # time.sleep(.5)
+    time.sleep(delay)
     driver.find_element(By.XPATH, "//button[@data-action-type = 'next']").click()
     time.sleep(delay)
     # Second Page
@@ -118,7 +130,7 @@ def runDisThang(delay, driver, teslaEngineer, textInput, x):
     driver.find_element(By.XPATH, "//input [@name = '/legalFormerTeslaInternOrContractor' and @value = 'no']").click()
     driver.find_element(By.XPATH, "//input [@name = '/legalReceiveNotifications' and @value = 'yes']").click()
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # time.sleep(1)
+    time.sleep(delay)
     driver.find_element(By.XPATH, "//input [@name = '/legalAcknowledgment' and @type = 'checkbox']").click()
     driver.find_element(By.XPATH, "//input [@name = '/legalAcknowledgmentName' ]").send_keys("Andrew Worthley")
     # time.sleep(.5)
@@ -129,7 +141,16 @@ def runDisThang(delay, driver, teslaEngineer, textInput, x):
     scrollPlease = driver.find_element(By.XPATH, "/html/body/div/div/div/form/div[1]/fieldset[1]/div[1]")
     ActionChains(driver).send_keys_to_element(scrollPlease, Keys.TAB, Keys.TAB).perform()
     time.sleep(delay)
-    driver.find_element(By.XPATH, "//input [@name = '/eeoAcknowledgment']").click()
+    ActionChains(driver).send_keys_to_element(scrollPlease, Keys.TAB, Keys.TAB).perform()
+    try:
+        time.sleep(delay)
+        driver.find_element(By.XPATH, "//input [@name = '/eeoAcknowledgment']").click()
+
+    except Exception as e:
+        print(e)
+        ActionChains(driver).send_keys_to_element(scrollPlease, Keys.TAB, Keys.TAB).perform()
+        time.sleep(delay * 2)
+        driver.find_element(By.XPATH, "//input [@name = '/eeoAcknowledgment']").click()
     # driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
     time.sleep(delay)
     gender = Select(driver.find_element(By.XPATH, "//select [@name = '/eeoGender']"))
@@ -140,8 +161,11 @@ def runDisThang(delay, driver, teslaEngineer, textInput, x):
     race.select_by_value("white")
     disability = Select(driver.find_element(By.XPATH, "//select [@name = '/eeoDisabilityStatus']"))
     disability.select_by_value("no")
+    time.sleep(delay)
     driver.find_element(By.XPATH, "//input [@name = '/eeoDisabilityStatusName']").send_keys("Andrew Worthley")
     # commit this line if you want to test things
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(delay)
     driver.find_element(By.XPATH, "//button [@data-action-type = 'submit']").click()
     time.sleep(delay * 1.5)
     print(xPath)
