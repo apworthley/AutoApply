@@ -1,3 +1,4 @@
+import csv
 
 import requests
 import selenium
@@ -5,13 +6,15 @@ from selenium.webdriver import Keys
 import threading
 
 import time
-
+from csv import writer
 
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 import chromedriver_autoinstaller
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.action_chains import ActionChains
+
+global x
 
 def main():
 
@@ -37,7 +40,7 @@ def applyTesla():
 
     #counter for keeping track and not double applying
     counterFile = open("counterFile.csv", "r")
-    x = 457
+
     x = int(counterFile.read())
     print(x)
 
@@ -46,16 +49,26 @@ def applyTesla():
     textInput = "1. With only one python class behind me, I wrote this bot today to apply for every engineering roll at Tesla. 2. Being able to learn new skills rapidly and apply them, lately this can be seen in this code I wrote, learning to ride a motorcycle in under a week and putting 1500 miles on it, and all throughout school. I am not the smartest person in the room but I will be the person in the room the longest if I feel like I don't understand something completely. 3. Not shutting down in high stress environments, instead loving the purpose and willing learn everything I can and move on. 4. Positive attitude and communication, instead of accepting defeat of a chance to work at Tesla I am taking this hail-Mary."
 
 
-    for i in range(1392):
-        #try:
+    while x < 1400:
+        try:
+
+            counterFile = open("counterFile.csv", "r")
+            x = int(counterFile.read())
+            print(x)
+            counterFile.close()
+            x = x + 1
+            counterFile = open("counterFile.csv", "w")
+            counterFile.write(str(x))
+            counterFile.close()
+
+            runDisThang(delay, driver, teslaEngineer, textInput, x)
 
 
-
-        runDisThang(delay, driver, teslaEngineer, textInput, x)
-        x= x+1
-
-        #except:
-
+        except Exception as e:
+            print(e)
+            failedFile = open("failed.csv", "a")
+            failedFile.write(str(x))
+            failedFile.close()
             # time.sleep(3)
             # driver.get(teslaEngineer)
             # time.sleep(2)
@@ -78,9 +91,7 @@ def applyTesla():
             #             x=x+1
             #         except:
             #             exit(1)
-        counterFile = open("counterFile.csv", "w")
-        counterFile.write(str(x))
-        counterFile.close()
+
 
 
 def runDisThang(delay, driver, teslaEngineer, textInput, x):
